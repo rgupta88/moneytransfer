@@ -30,10 +30,17 @@ public class TransactionResource implements ExceptionHandler {
 	@POST
 	@Path(RestConstants.seperator + RestConstants.transfer)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String doTransfer(MoneyTransferDto transferDto) {
-		transferDto.validate();
-		return service.doTransfer(transferDto.getFromAccountId(), transferDto.getToAccountId(), transferDto.getAmount(),
-				transferDto.getTransactionMsg());
+	public Response doTransfer(MoneyTransferDto transferDto) {
+		try {
+			transferDto.validate();
+			return Response
+					.ok(service.doTransfer(transferDto.getFromAccountId(), transferDto.getToAccountId(),
+							transferDto.getAmount(), transferDto.getTransactionMsg()), MediaType.APPLICATION_JSON)
+					.build();
+		} catch (RuntimeException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+
 	}
 
 	@GET
