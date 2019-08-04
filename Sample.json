@@ -1,0 +1,55 @@
+API create Account:
+POST : http://localhost:8090/moneytransfer/api/account/create
+Body : 
+{
+	"userId" : "rgupta"
+}
+
+=========================================================
+Find all account in system : 
+GET : http://localhost:8090/moneytransfer/api/account/list
+
+=========================================================
+
+Find specific account detail:
+GET : http://localhost:8090/moneytransfer/api/account/{accountNumber}/detail
+
+=========================================================
+Deposit money in account :
+POST : http://localhost:8090/moneytransfer/api/transaction/deposit
+BODY : 
+
+{
+"accountNumber" : 1,
+"amount" : 50000
+}
+
+=========================================================
+Withdraw money from account:
+POST : http://localhost:8090/moneytransfer/api/transaction/withdraw
+
+{
+"accountNumber" : 1,
+"amount" : 10000
+}
+
+========================================================
+
+Transfer money from one account to other account:
+
+POST : http://localhost:8090/moneytransfer/api/transaction/transfer
+BODY :
+{
+"fromAccountId" : 1,
+"toAccountId": 2,
+"amount" : 4000,
+"transactionMsg" : "Bills"
+}
+
+=======================================================
+Check transaction history for account :
+
+GET : http://localhost:8090/moneytransfer/api/transaction/{accountnumber}/history
+
+
+

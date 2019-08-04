@@ -56,6 +56,10 @@ public class AccountResource {
 		return Response.ok(new AccountDetailDto(account.getNumber(), account.getUserId(),
 				account.getBalance().toString(), hisrtoryDtoList), MediaType.APPLICATION_JSON).build();
 	}
+	/*
+	 * 
+	 * Create new account
+	 * */
 
 	@POST
 	@Path(RestConstants.seperator + RestConstants.create_account)

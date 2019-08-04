@@ -24,6 +24,9 @@ public class TransactionResource implements ExceptionHandler {
 
 	private TransactionService service = ApplicationContext.getTransactionservice();
 
+	/*
+	 * Transfer amount from one account to other account
+	 */
 	@POST
 	@Path(RestConstants.seperator + RestConstants.transfer)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -46,6 +49,9 @@ public class TransactionResource implements ExceptionHandler {
 		});
 		return historyDto;
 	}
+	/*
+	 * Withdraw amount from account
+	 */
 
 	@POST
 	@Path(RestConstants.seperator + RestConstants.withdraw)
@@ -62,6 +68,9 @@ public class TransactionResource implements ExceptionHandler {
 
 	}
 
+	/*
+	 * deposit amount in account
+	 */
 	@POST
 	@Path(RestConstants.seperator + RestConstants.deposit)
 	@Produces(MediaType.TEXT_PLAIN)
