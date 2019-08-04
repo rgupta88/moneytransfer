@@ -11,6 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+
 import com.monerytransfer.dto.DepositWithdrawDTO;
 import com.monerytransfer.dto.MoneyTransferDto;
 import com.monerytransfer.dto.TransactionHistoryDto;
@@ -22,6 +24,7 @@ import com.monerytransfer.service.TransactionService;
 @Path(RestConstants.transaction)
 public class TransactionResource implements ExceptionHandler {
 
+	final static Logger logger = Logger.getLogger(TransactionResource.class);
 	private TransactionService service = ApplicationContext.getTransactionservice();
 
 	/*
@@ -33,6 +36,7 @@ public class TransactionResource implements ExceptionHandler {
 	public Response doTransfer(MoneyTransferDto transferDto) {
 		try {
 			transferDto.validate();
+			logger.info("Input validation completed.");
 			return Response
 					.ok(service.doTransfer(transferDto.getFromAccountId(), transferDto.getToAccountId(),
 							transferDto.getAmount(), transferDto.getTransactionMsg()), MediaType.APPLICATION_JSON)

@@ -129,52 +129,59 @@ public class TransactionDaoImpl implements TransactionDao {
 	private void doTransfer(String fromAccount, String toAccount, String amount) throws SQLException {
 		Account debitAccount = accountDao.find(fromAccount);
 		Account creditAccount = accountDao.find(toAccount);
-		BigDecimal transferAmount = new BigDecimal(amount);
-		checkBalance(debitAccount, amount);
-		debitAccount.debit(transferAmount);
-		creditAccount.credit(transferAmount);
-		Connection cn = dbManager.getConnection();
-		PreparedStatement stmt = null;
-		try {
-			cn.setAutoCommit(false);
-			stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
-			stmt.setString(1, debitAccount.getBalance().toString());
-			stmt.setString(2, debitAccount.getNumber());
-			stmt.execute();
-			stmt.setString(1, creditAccount.getBalance().toString());
-			stmt.setString(2, creditAccount.getNumber());
-			stmt.execute();
-			cn.commit();
-		} catch (Exception e) {
-			cn.rollback();
-			e.printStackTrace();
-		} finally {
-			if (stmt != null)
-				stmt.close();
-			if (cn != null)
-				cn.close();
+		if (debitAccount != null && creditAccount != null) {
+			BigDecimal transferAmount = new BigDecimal(amount);
+			checkBalance(debitAccount, amount);
+			debitAccount.debit(transferAmount);
+			creditAccount.credit(transferAmount);
+			Connection cn = dbManager.getConnection();
+			PreparedStatement stmt = null;
+			try {
+				cn.setAutoCommit(false);
+				stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
+				stmt.setString(1, debitAccount.getBalance().toString());
+				stmt.setString(2, debitAccount.getNumber());
+				stmt.execute();
+				stmt.setString(1, creditAccount.getBalance().toString());
+				stmt.setString(2, creditAccount.getNumber());
+				stmt.execute();
+				cn.commit();
+			} catch (Exception e) {
+				cn.rollback();
+				e.printStackTrace();
+			} finally {
+				if (stmt != null)
+					stmt.close();
+				if (cn != null)
+					cn.close();
+			}
 		}
+
 	}
 
 	@Override
 	public String withDraw(String accountNumber, String amount) {
 		// TODO Auto-generated method stub
 		Account debitAccount = accountDao.find(accountNumber);
-		checkBalance(debitAccount, amount);
-		debitAccount.debit(new BigDecimal(amount));
-		try (Connection cn = dbManager.getConnection()) {
-			PreparedStatement stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
-			int count = 0;
-			stmt.setString(++count, debitAccount.getBalance().toString());
-			stmt.setString(++count, accountNumber);
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
+		if (debitAccount != null) {
+			checkBalance(debitAccount, amount);
+			debitAccount.debit(new BigDecimal(amount));
+			try (Connection cn = dbManager.getConnection()) {
+				PreparedStatement stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
+				int count = 0;
+				stmt.setString(++count, debitAccount.getBalance().toString());
+				stmt.setString(++count, accountNumber);
+				stmt.execute();
+				stmt.close();
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			createAccountHistory(UUID.randomUUID().toString(), accountNumber, amount, TransactionType.Debit.toString(),
+					TransactionMessage.WITHDRAW.toString(), TransactionStatus.SUCCESS.toString());
+			return TransactionMessage.WITHDRAW.toString();
 		}
-		createAccountHistory(UUID.randomUUID().toString(), accountNumber, amount, TransactionType.Debit.toString(),
-				TransactionMessage.WITHDRAW.toString(), TransactionStatus.SUCCESS.toString());
-		return TransactionMessage.WITHDRAW.toString();
+		return TransactionStatus.FAILED.toString();
+
 	}
 
 	private void checkBalance(Account debitAccount, String amount) {
@@ -186,27 +193,29 @@ public class TransactionDaoImpl implements TransactionDao {
 					TransactionStatus.FAILED.toString());
 			throw e;
 		}
-
 	}
 
 	@Override
 	public String deposit(String accountNumber, String amount) {
 		// TODO Auto-generated method stub
 		Account creditAccount = accountDao.find(accountNumber);
-		creditAccount.credit(new BigDecimal(amount));
-		try (Connection cn = dbManager.getConnection()) {
-			PreparedStatement stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
-			int count = 0;
-			stmt.setString(++count, creditAccount.getBalance().toString());
-			stmt.setString(++count, accountNumber);
-			stmt.execute();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
+		if (creditAccount != null) {
+			creditAccount.credit(new BigDecimal(amount));
+			try (Connection cn = dbManager.getConnection()) {
+				PreparedStatement stmt = cn.prepareStatement("update accounts set balance =? where account_number =?");
+				int count = 0;
+				stmt.setString(++count, creditAccount.getBalance().toString());
+				stmt.setString(++count, accountNumber);
+				stmt.execute();
+				stmt.close();
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			createAccountHistory(UUID.randomUUID().toString(), accountNumber, amount, TransactionType.Credit.toString(),
+					TransactionMessage.DEPOSIT.toString(), TransactionStatus.SUCCESS.toString());
+			return TransactionMessage.DEPOSIT.toString();
 		}
-		createAccountHistory(UUID.randomUUID().toString(), accountNumber, amount, TransactionType.Credit.toString(),
-				TransactionMessage.DEPOSIT.toString(), TransactionStatus.SUCCESS.toString());
-		return TransactionMessage.DEPOSIT.toString();
+		return TransactionStatus.FAILED.toString();
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.monerytransfer.dto;
 
+import static java.math.RoundingMode.DOWN;
+
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,6 +29,14 @@ public class DepositWithdrawDTO {
 
 	public String getAmount() {
 		return amount;
+	}
+	
+	public void validate(){
+		BigDecimal amount = new BigDecimal(this.amount).setScale(2, DOWN);
+		if (amount.compareTo(new BigDecimal(0)) < 0) {
+            throw new IllegalArgumentException("Amount is negative");
+        }
+		 InputValidation.checkBlank(accountNumber, "Account number is empty");
 	}
 
 }

@@ -15,7 +15,7 @@ import com.monerytransfer.model.Account;
 public class AccountDaoImpl implements AccountDao {
 
 	private final DBManager dbManager;
-	
+
 	private final AtomicInteger accountNumber;
 
 	public AccountDaoImpl(DBManager dbManager) {
@@ -36,7 +36,7 @@ public class AccountDaoImpl implements AccountDao {
 	}
 
 	@Override
-	public void create( String userId) {
+	public void create(String userId) {
 		// TODO Auto-generated method stub
 		try (Connection cn = dbManager.getConnection()) {
 			PreparedStatement stmt = cn.prepareStatement("INSERT INTO accounts VALUES (?, ?, ?)");
@@ -76,7 +76,8 @@ public class AccountDaoImpl implements AccountDao {
 			ResultSet rs = stmt.executeQuery();
 			List<Account> accountList = new ArrayList<Account>();
 			while (rs.next()) {
-				accountList.add(new Account(rs.getString("account_number"), rs.getString("user_id"),rs.getString("balance")));
+				accountList.add(
+						new Account(rs.getString("account_number"), rs.getString("user_id"), rs.getString("balance")));
 			}
 			stmt.close();
 			return accountList;

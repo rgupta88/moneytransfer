@@ -12,18 +12,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+
 import com.monerytransfer.dao.AccountDao;
 import com.monerytransfer.dto.AccountDetailDto;
 import com.monerytransfer.dto.AccountDto;
 import com.monerytransfer.dto.TransactionHistoryDto;
 import com.monerytransfer.injection.ApplicationContext;
+import com.monerytransfer.main.App;
 import com.monerytransfer.model.Account;
 import com.monerytransfer.model.TransactionHistory;
 import com.monerytransfer.service.TransactionService;
 
 @Path(RestConstants.account)
 public class AccountResource {
-
+	final static Logger logger = Logger.getLogger(AccountResource.class);
 	private AccountDao dao = ApplicationContext.getAccountdao();
 	private TransactionService service = ApplicationContext.getTransactionservice();
 
@@ -52,6 +55,7 @@ public class AccountResource {
 					history.getTransactionType(), history.getTransactionStatus(), history.getTransactionMsg(),
 					history.getTransactionDate()));
 		});
+		logger.info("Account details for account number : " + accountNumber);
 
 		return Response.ok(new AccountDetailDto(account.getNumber(), account.getUserId(),
 				account.getBalance().toString(), hisrtoryDtoList), MediaType.APPLICATION_JSON).build();
@@ -65,6 +69,7 @@ public class AccountResource {
 	@Path(RestConstants.seperator + RestConstants.create_account)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(AccountDto account) {
+		logger.info("Created accounted for user : " + account.getUserId());
 		dao.create(account.getUserId());
 		return Response.ok(new String("Account Created"), MediaType.APPLICATION_JSON).build();
 	}

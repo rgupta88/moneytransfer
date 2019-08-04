@@ -1,5 +1,6 @@
 package com.monerytransfer.main;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -11,6 +12,7 @@ import com.monerytransfer.injection.ApplicationContext;
  * Main to start rest application
  * */
 public class App {
+	final static Logger logger = Logger.getLogger(App.class);
 	public static void main(String[] args) throws Exception {
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
@@ -26,6 +28,7 @@ public class App {
 		jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "com.monerytransfer.resource");
 		try {
 			jettyServer.start();
+			logger.info("Server started.");
 			jettyServer.join();
 		} finally {
 			jettyServer.destroy();
