@@ -69,6 +69,7 @@ public class TransactionResource implements ExceptionHandler {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response doWithDraw(DepositWithdrawDTO depositWithdrawDTO) {
 		try {
+			depositWithdrawDTO.validate();
 			return Response
 					.ok(service.doWithdraw(depositWithdrawDTO.getAccountNumber(), depositWithdrawDTO.getAmount()),
 							MediaType.APPLICATION_JSON)
@@ -85,7 +86,14 @@ public class TransactionResource implements ExceptionHandler {
 	@POST
 	@Path(RestConstants.seperator + RestConstants.deposit)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String doDeposit(DepositWithdrawDTO depositWithdrawDTO) {
-		return service.doDeposit(depositWithdrawDTO.getAccountNumber(), depositWithdrawDTO.getAmount());
+	public Response doDeposit(DepositWithdrawDTO depositWithdrawDTO) {
+		try {
+			depositWithdrawDTO.validate();
+			return Response.ok(service.doDeposit(depositWithdrawDTO.getAccountNumber(), depositWithdrawDTO.getAmount()),
+					MediaType.APPLICATION_JSON).build();
+		} catch (RuntimeException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+
 	}
 }
