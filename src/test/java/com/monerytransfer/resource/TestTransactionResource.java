@@ -2,6 +2,7 @@ package com.monerytransfer.resource;
 
 import static io.restassured.RestAssured.given;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -17,11 +18,14 @@ import io.restassured.http.ContentType;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestTransactionResource {
 
+	 static TestServer server;
+
 	@BeforeClass
 	public static void setup() {
 		RestAssured.port = Integer.valueOf(8090);
 		RestAssured.baseURI = "http://localhost";
-
+		server = new TestServer();
+		server.start();
 	}
 
 	@Test
@@ -66,6 +70,11 @@ public class TestTransactionResource {
 		DepositWithdrawDTO deposit = new DepositWithdrawDTO("1", "9999999999999");
 		given().contentType(ContentType.JSON).body(deposit).post("moneytransfer/api/transaction/withdraw").then()
 				.statusCode(500);
+	}
+
+	@AfterClass
+	public static void testStopJetty() {
+		server.stop();
 	}
 
 }
