@@ -41,8 +41,10 @@ public class TransactionResource implements ExceptionHandler {
 					.ok(service.doTransfer(transferDto.getFromAccountId(), transferDto.getToAccountId(),
 							transferDto.getAmount(), transferDto.getTransactionMsg()), MediaType.APPLICATION_JSON)
 					.build();
-		} catch (RuntimeException e) {
+		} catch (IllegalArgumentException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		} catch (RuntimeException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
 
 	}
@@ -75,7 +77,7 @@ public class TransactionResource implements ExceptionHandler {
 							MediaType.APPLICATION_JSON)
 					.build();
 		} catch (RuntimeException e) {
-			return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
 
 	}
@@ -91,8 +93,10 @@ public class TransactionResource implements ExceptionHandler {
 			depositWithdrawDTO.validate();
 			return Response.ok(service.doDeposit(depositWithdrawDTO.getAccountNumber(), depositWithdrawDTO.getAmount()),
 					MediaType.APPLICATION_JSON).build();
-		} catch (RuntimeException e) {
+		} catch (IllegalArgumentException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		} catch (RuntimeException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
 
 	}

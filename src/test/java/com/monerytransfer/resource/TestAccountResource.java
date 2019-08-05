@@ -1,4 +1,4 @@
-package com.monerytransfer.resource.test;
+package com.monerytransfer.resource;
 
 import static io.restassured.RestAssured.given;
 
